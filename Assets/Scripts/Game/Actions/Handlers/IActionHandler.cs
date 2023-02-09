@@ -1,9 +1,11 @@
-﻿using Game.Actions;
+﻿using UnityEngine;
 
-namespace Assets.Scripts.Game.Actions.Handlers
+namespace Game.Actions.Handlers
 {
     internal interface IActionHandler
     {
-        public bool Handle(ActionContext context);
+        int Priority { get; }
+
+        bool Handle(RaycastHit hit);
     }
 }

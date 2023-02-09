@@ -51,6 +51,20 @@ namespace Zenject
         {
             return this.FromIFactory(x => x.To<TSubFactory>().AsCached());
         }
+        
+        // Allows for binding arguments to factory
+        public ConcreteBinderGeneric<IFactory<TContract>> FromFactoryWithResult<TSubFactory>()
+            where TSubFactory : IFactory<TContract>
+        {
+            ConcreteBinderGeneric<IFactory<TContract>> concreteBinder = null;
+            
+            this.FromIFactory(x =>
+            {
+                concreteBinder = x;
+                x.To<TSubFactory>().AsCached();
+            });
+            return concreteBinder;
+        }
 
         public FactorySubContainerBinder<TContract> FromSubContainerResolve()
         {

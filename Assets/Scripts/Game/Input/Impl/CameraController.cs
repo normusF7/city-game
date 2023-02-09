@@ -16,10 +16,10 @@ namespace Game.Input.Impl
 
         public void Tick()
         {
-            if(_inputApi.isTapping.Value)
-            {
-                _cameraControllerComponent.Move(-_inputApi.TouchDelta * Time.deltaTime);
-            }
+            // if(_inputApi.isTapping.Value)
+            // {
+            //     _cameraControllerComponent.Move(-_inputApi.TouchDelta * Time.deltaTime);
+            // }
         }
     }
 }

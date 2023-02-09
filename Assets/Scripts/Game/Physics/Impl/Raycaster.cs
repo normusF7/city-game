@@ -19,6 +19,7 @@ namespace Game.Physics.Impl
         {
             _inputApi = inputApi;
             _cameraDecorator = cameraDecorator;
+            _raycastRepository = raycastRepository;
         }
 
         public void Initialize()
@@ -47,13 +48,7 @@ namespace Game.Physics.Impl
         private void PerformRaycast()
         {
             var ray = _cameraDecorator.ScreenPointToRay(_inputApi.TouchPosition);
-            RaycastHit hit = default;
-
-            if(UnityEngine.Physics.Raycast(ray, out hit))
-            {
-                hit.transform.position = Vector3.zero;
-            }
-
+            UnityEngine.Physics.Raycast(ray, out var hit);
             _raycastRepository.SetCurrentHit(hit);
         }
     }
