@@ -1,5 +1,4 @@
 ﻿using Game.Actions.StateMachine.Impl;
-using Game.Input;
 using UnityEngine;
 
 namespace Game.Actions.Handlers.Impl
@@ -7,14 +6,12 @@ namespace Game.Actions.Handlers.Impl
     public class ViewingHandler : IActionHandler
     {
         private readonly IActionsContext _actionsContext;
-        private readonly CameraControllerComponent _cameraController;
-        private readonly IInputApi _inputApi;
+        private readonly ViewingState.Factory _viewingStateFactory;
 
-        public ViewingHandler(IActionsContext actionsContext, CameraControllerComponent cameraController, IInputApi inputApi)
+        public ViewingHandler(IActionsContext actionsContext, ViewingState.Factory viewingStateFactory)
         {
             _actionsContext = actionsContext;
-            _cameraController = cameraController;
-            _inputApi = inputApi;
+            _viewingStateFactory = viewingStateFactory;
         }
 
         public int Priority => 0;
@@ -30,7 +27,7 @@ namespace Game.Actions.Handlers.Impl
                 return true;
             }
 
-            _actionsContext.ChangeState(new ViewingState(_cameraController, _inputApi));
+            _actionsContext.ChangeState(_viewingStateFactory.Create());
             return true;
         }
     }

@@ -2,7 +2,7 @@
 
 namespace Game.Physics
 {
-    internal interface IRaycastApi
+    public interface IRaycastApi
     {
         public bool IsHit { get; }
         public RaycastHit currentHit { get; }

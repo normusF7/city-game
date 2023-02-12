@@ -79,16 +79,53 @@ namespace Game.Grid.Impl
             SetBuilding(building, position);
             return true;
         }
+        
+        public bool TryGetBuildingAtPosition(Vector2Int position, out IBuilding building)
+        {
+            if (IsCellEmpty(position))
+            {
+                building = null;
+                return false;
+            }
 
-        private bool IsCellEmpty(Vector2Int position)
+            building = GetBuilding(position);
+            return true;
+        }
+
+        public bool TryGetPlacedBuildingAtPosition(Vector2Int position, out IPlacedBuilding building)
+        {
+            if (IsCellEmpty(position))
+            {
+                building = null;
+                return false;
+            }
+
+            building = _cells[position.x, position.y].Building;
+            return true;
+        }
+
+        public bool IsCellEmpty(Vector2Int position)
         {
             return _cells[position.x, position.y].Building == null;
+        }
+
+        public Vector2Int WorldPosToGrid(Vector3 worldPosition)
+        {
+            return new Vector2Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.z));
         }
 
         private void SetBuilding(IBuilding building, Vector2Int position)
         {
             _cells[position.x, position.y].Building = building;
-            building.SetPosition(new Vector3(position.x + 0.5f, 0.25f, position.y + 0.5f));
+            building.SetPosition(new Vector3(position.x + 0.5f, 0f, position.y + 0.5f));
+        }
+
+        private IBuilding GetBuilding(Vector2Int position)
+        {
+            var building = _cells[position.x, position.y].Building;
+            _cells[position.x, position.y].Building = null;
+
+            return building;
         }
     }
 }

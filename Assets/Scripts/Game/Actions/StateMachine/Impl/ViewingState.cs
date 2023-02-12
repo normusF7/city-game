@@ -1,6 +1,7 @@
 ﻿using Core.Framework.StateMachine;
 using Game.Input;
 using UnityEngine;
+using Zenject;
 
 namespace Game.Actions.StateMachine.Impl
 {
@@ -29,6 +30,10 @@ namespace Game.Actions.StateMachine.Impl
         }
 
         public void End()
+        {
+        }
+        
+        public class Factory : PlaceholderFactory<ViewingState>
         {
         }
     }

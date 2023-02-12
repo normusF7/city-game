@@ -5,6 +5,7 @@ using Game.Actions.Impl;
 using Game.Actions.StateMachine.Impl;
 using Game.Buildings;
 using Game.Camera;
+using Game.Cursor.Impl;
 using Game.Debug.Impl;
 using Game.Grid;
 using Game.Grid.Data;
@@ -23,6 +24,12 @@ public class RootCoreInstaller : MonoInstaller
     private CameraControllerComponent _cameraController;
     [SerializeField]
     private GameObject _buildingPrefab;
+    [SerializeField]
+    private GameObject _cursorPrefab;
+    [SerializeField]
+    private HighlightColorLibrary _highlightColorLibrary;
+    [SerializeField]
+    private MeshRenderer _gridRenderer;
 
     public override void InstallBindings()
     {
@@ -74,6 +81,29 @@ public class RootCoreInstaller : MonoInstaller
         
         Container.BindInterfacesTo<GridRepository>()
             .AsSingle();
+
+        Container.BindInterfacesTo<GridRenderer>()
+            .AsSingle()
+            .WithArguments(_highlightColorLibrary, _gridRenderer.material);
+        
+        Container.BindInterfacesTo<GridService>()
+            .AsSingle();
+        
+        Container.BindInterfacesTo<GridApi>()
+            .AsSingle();
+
+        Container.BindInterfacesTo<CursorService>()
+            .AsSingle()
+            .WithArguments(_cursorPrefab);
+        
+        Container.BindInterfacesTo<CursorApi>()
+            .AsSingle();
+
+        Container.BindFactory<Vector2Int, IBuilding, DraggingState, DraggingState.Factory>();
+        
+        Container.BindFactory<EmptyState, EmptyState.Factory>();
+        
+        Container.BindFactory<ViewingState, ViewingState.Factory>();
 
         var a = Container.BindIFactory<IBuilding>();
             var b = a.FromFactoryWithResult<BuildingFactory>();
@@ -127,7 +157,7 @@ public class RootCoreInstaller : MonoInstaller
 
         public IBuilding Create()
         {
-            var gameObject = Object.Instantiate(_prefab, Vector3.zero, Quaternion.identity);
+            var gameObject = Object.Instantiate(_prefab, Vector3.zero, Quaternion.Euler(new Vector3(-90, 0, 0)));
             return new Building(gameObject.GetComponent<BuildingComponent>());
         }
     }

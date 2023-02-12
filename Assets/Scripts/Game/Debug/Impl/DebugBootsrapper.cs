@@ -19,6 +19,9 @@ namespace Game.Debug.Impl
         public void Initialize()
         {
             _gridRepository.TrySetBuilding(_buildingFactory.Create(), Vector2Int.zero);
+            _gridRepository.TrySetBuilding(_buildingFactory.Create(), new Vector2Int(0, 1));
+            _gridRepository.TrySetBuilding(_buildingFactory.Create(), new Vector2Int(0, 2));
+            _gridRepository.TrySetBuilding(_buildingFactory.Create(), new Vector2Int(0, 3));
         }
     }
 }
