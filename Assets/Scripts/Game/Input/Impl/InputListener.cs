@@ -19,7 +19,7 @@ namespace Game.Input.Impl
 
         private void OnTouchPress(InputAction.CallbackContext context)
         {
-            _inputService.isTapping.Value = context.ReadValueAsButton();
+            _inputService.IsTouching.Value = context.ReadValueAsButton();
         }
 
         public void Initialize()

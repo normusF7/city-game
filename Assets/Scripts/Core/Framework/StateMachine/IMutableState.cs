@@ -4,7 +4,6 @@
     {
         public void Begin();
         public void Update();
-        //TODO: Use Dispose?
         public void End();
     }
 }

@@ -1,7 +1,7 @@
-﻿namespace Game.Grid.Data.Impl
+﻿namespace Game.Grid.Data
 {
     public interface IMutableCell : ICell
     {
-        public IBuilding Building { get; set; }
+        public new IBuilding Building { get; set; }
     }
 }

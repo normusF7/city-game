@@ -1,4 +1,4 @@
-﻿using Game.Buildings.Data;
+﻿using Game.Buildings.Data.Impl;
 
 namespace Game.Grid.Data
 {

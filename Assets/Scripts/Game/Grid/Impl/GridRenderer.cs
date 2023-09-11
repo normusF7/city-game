@@ -6,6 +6,9 @@ namespace Game.Grid.Impl
 {
     public class GridRenderer : IGridRenderer
     {
+        private static readonly int SelectedPosition = Shader.PropertyToID("_SelectedPosition");
+        private static readonly int SelectedColor = Shader.PropertyToID("_SelectedColor");
+        
         private readonly Material _gridMaterial;
         private readonly HighlightColorLibrary _highlightColorLibrary;
 
@@ -17,16 +20,15 @@ namespace Game.Grid.Impl
 
         public void ResetHighlight()
         {
-            _gridMaterial.SetVector("_SelectedPosition", -Vector4.one);
+            _gridMaterial.SetVector(SelectedPosition, -Vector4.one);
         }
 
         public void SetHighlightAtPosition(Vector2Int position, HighlightType highlightType)
         {
-            var color = _highlightColorLibrary.HighlightColors.FirstOrDefault(x => x.HighlightType == highlightType)
-                .Color;
+            var color = _highlightColorLibrary.HighlightColors.FirstOrDefault(x => x.HighlightType == highlightType).Color;
             
-            _gridMaterial.SetVector("_SelectedPosition", new Vector4(position.x, position.y, 0, 0));
-            _gridMaterial.SetColor("_SelectedColor", color);
+            _gridMaterial.SetVector(SelectedPosition, new Vector4(position.x, position.y, 0, 0));
+            _gridMaterial.SetColor(SelectedColor, color);
         }
     }
 }

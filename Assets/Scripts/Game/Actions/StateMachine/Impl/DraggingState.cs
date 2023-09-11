@@ -14,97 +14,108 @@ namespace Game.Actions.StateMachine.Impl
     {
         private readonly Vector2Int _buildingStartPosition;
         private readonly IBuilding _draggedBuilding;
-        private readonly IInputApi _inputApi;
-        private readonly IRaycastApi _raycastApi;
-        private readonly IGridApi _gridApi;
+        private readonly IInputService _inputService;
+        private readonly IRaycastService _raycastService;
+        private readonly IGridService _gridService;
         private readonly IActionsContext _actionsContext;
         private readonly ViewingState.Factory _viewingStateFactory;
-        private readonly ICursorApi _cursorApi;
+        private readonly ICursorService _cursorService;
         
         public DraggingState(
             Vector2Int buildingStartPosition,
             IBuilding draggedBuilding, 
-            IInputApi inputApi, 
-            IRaycastApi raycastApi,
-            IGridApi gridApi,
+            IInputService inputService, 
+            IRaycastService raycastService,
+            IGridService gridService,
             IActionsContext actionsContext,
             ViewingState.Factory viewingStateFactory,
-            ICursorApi cursorApi)
+            ICursorService cursorService)
         {
             _buildingStartPosition = buildingStartPosition;
             _draggedBuilding = draggedBuilding;
-            _inputApi = inputApi;
-            _raycastApi = raycastApi;
-            _gridApi = gridApi;
+            _inputService = inputService;
+            _raycastService = raycastService;
+            _gridService = gridService;
             _actionsContext = actionsContext;
             _viewingStateFactory = viewingStateFactory;
-            _cursorApi = cursorApi;
+            _cursorService = cursorService;
         }
 
         public void Begin()
         {
-            UnityEngine.Debug.Log("Start dragging");
-            _cursorApi.TryConnectToCursor(_draggedBuilding);
+            _cursorService.TryConnectToCursor(_draggedBuilding);
         }
 
         public void Update()
         {
-            if (_raycastApi.IsHit)
+            if (_raycastService.IsHit)
             {
-                _cursorApi.SetPosition(_raycastApi.currentHit.point + new Vector3(0, 1.4f, 0));
-                if (_gridApi.TryGetPlacedBuildingAtPosition(_raycastApi.currentHit.point, out var builidng))
-                {
-                    if (builidng.CanBeMergedWith(_draggedBuilding))
-                    {
-                        _gridApi.SetHighlightAtPosition(_gridApi.GridPositionFromWorld(_raycastApi.currentHit.point), HighlightType.Available);
-                    }
-                    else
-                    {
-                        _gridApi.SetHighlightAtPosition(_gridApi.GridPositionFromWorld(_raycastApi.currentHit.point), HighlightType.Unavailable);
-                    }
-                }
-                else
-                {
-                    _gridApi.SetHighlightAtPosition(_gridApi.GridPositionFromWorld(_raycastApi.currentHit.point), HighlightType.Available);
-                }
+                ProcessHit();
             }
             else
             {
-                _gridApi.ResetHighlight();
+                _gridService.ResetHighlight();
             }
 
-            if (_inputApi.isTapping.Value == false && _raycastApi.IsHit)
+            if (_inputService.IsTouching.Value == false && _raycastService.IsHit)
             {
-                _draggedBuilding.ResetRigidbody();
-                if(_gridApi.TryPlaceBuildingAtWorldPosition(_draggedBuilding, _raycastApi.currentHit.point))
-                {
-                    UnityEngine.Debug.Log("Building placed.");
-                    _actionsContext.ChangeState(_viewingStateFactory.Create());
-                }
-                else
-                {
-                    _gridApi.TryGetPlacedBuildingAtPosition(_raycastApi.currentHit.point, out var builidng);
-                    
-                    if (builidng.CanBeMergedWith(_draggedBuilding))
-                    {
-                        builidng.Upgrade();
-                        _draggedBuilding.Dispose();
-                    }
-                    else
-                    {
-                        _gridApi.TryPlaceBuildingAtGridPosition(_draggedBuilding, _buildingStartPosition);
-                    }
-                    
-                    _actionsContext.ChangeState(_viewingStateFactory.Create());
-                }
-                
+                PutObjectDown();
             }
         }
 
         public void End()
         {
-            _cursorApi.TryReleaseFromCursor(out _);
-            _gridApi.ResetHighlight();
+            _cursorService.TryReleaseFromCursor(out _);
+            _gridService.ResetHighlight();
+        }
+
+        private void ProcessHit()
+        {
+            _cursorService.SetPosition(_raycastService.CurrentHit.point + new Vector3(0, 1.4f, 0));
+            if (_gridService.TryGetPlacedBuildingAtPosition(_raycastService.CurrentHit.point, out var builidng))
+            {
+                if (builidng.CanBeMergedWith(_draggedBuilding))
+                {
+                    _gridService.SetHighlightAtPosition(_gridService.GridPositionFromWorld(_raycastService.CurrentHit.point),
+                        HighlightType.Available);
+                }
+                else
+                {
+                    _gridService.SetHighlightAtPosition(_gridService.GridPositionFromWorld(_raycastService.CurrentHit.point),
+                        HighlightType.Unavailable);
+                }
+            }
+            else
+            {
+                _gridService.SetHighlightAtPosition(_gridService.GridPositionFromWorld(_raycastService.CurrentHit.point),
+                    HighlightType.Available);
+            }
+        }
+        
+        private void PutObjectDown()
+        {
+            _draggedBuilding.ResetRigidbody();
+            
+            if (_gridService.TryPlaceBuildingAtWorldPosition(_draggedBuilding, _raycastService.CurrentHit.point))
+            {
+                _actionsContext.ChangeState(_viewingStateFactory.Create());
+            }
+            else
+            {
+                _gridService.TryGetPlacedBuildingAtPosition(_raycastService.CurrentHit.point, out var builidng);
+
+                if (builidng.CanBeMergedWith(_draggedBuilding))
+                {
+                    builidng.Upgrade();
+                    _draggedBuilding.Dispose();
+                }
+                else
+                {
+                    _gridService.TryPlaceBuildingAtGridPosition(_draggedBuilding, _buildingStartPosition);
+                }
+
+                _actionsContext.ChangeState(_viewingStateFactory.Create());
+            }
         }
 
         public class Factory : PlaceholderFactory<Vector2Int, IBuilding, DraggingState>

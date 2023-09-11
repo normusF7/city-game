@@ -1,35 +1,34 @@
 ﻿using Game.Camera;
 using Game.Input;
 using System;
-using UnityEngine;
 using Zenject;
 
 namespace Game.Physics.Impl
 {
     public class Raycaster : IRaycaster, IInitializable, IDisposable, ITickable
     {
-        private readonly IInputApi _inputApi;
+        private readonly IInputService _inputService;
         private readonly ICameraDecorator _cameraDecorator;
         private readonly IRaycastRepository _raycastRepository;
 
         public Raycaster(
-            IInputApi inputApi, 
+            IInputService inputService, 
             ICameraDecorator cameraDecorator,
             IRaycastRepository raycastRepository)
         {
-            _inputApi = inputApi;
+            _inputService = inputService;
             _cameraDecorator = cameraDecorator;
             _raycastRepository = raycastRepository;
         }
 
         public void Initialize()
         {
-            _inputApi.isTapping.Bind(IsTappingChanged);
+            _inputService.IsTouching.Observe(IsTappingChanged);
         }
 
         public void Dispose()
         {
-            _inputApi.isTapping.UnBind(IsTappingChanged);
+            _inputService.IsTouching.UnObserve(IsTappingChanged);
         }
 
         public void Tick()
@@ -37,7 +36,7 @@ namespace Game.Physics.Impl
             PerformRaycast();
         }
 
-        public void IsTappingChanged(bool value)
+        private void IsTappingChanged(bool value)
         {
             if(value)
             {
@@ -47,7 +46,7 @@ namespace Game.Physics.Impl
 
         private void PerformRaycast()
         {
-            var ray = _cameraDecorator.ScreenPointToRay(_inputApi.TouchPosition);
+            var ray = _cameraDecorator.ScreenPointToRay(_inputService.TouchPosition);
             UnityEngine.Physics.Raycast(ray, out var hit);
             _raycastRepository.SetCurrentHit(hit);
         }

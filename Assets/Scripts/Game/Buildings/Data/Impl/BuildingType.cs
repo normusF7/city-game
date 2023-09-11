@@ -1,4 +1,4 @@
-﻿namespace Game.Buildings.Data
+﻿namespace Game.Buildings.Data.Impl
 {
     public enum BuildingType
     {

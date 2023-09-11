@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: HighlightColorsLibrary
   m_EditorClassIdentifier: 
   _highlightColors:
-    m_Keys: 
-    m_Values: []
+  - HighlightType: 0
+    Color: {r: 0.29488546, g: 0.6698113, b: 0.31891918, a: 1}
+  - HighlightType: 1
+    Color: {r: 0.73333335, g: 0.47450984, b: 0.427451, a: 1}

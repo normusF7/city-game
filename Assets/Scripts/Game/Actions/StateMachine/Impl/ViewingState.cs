@@ -8,12 +8,12 @@ namespace Game.Actions.StateMachine.Impl
     public class ViewingState : IMutableState
     {
         private readonly CameraControllerComponent _cameraControllerComponent;
-        private readonly IInputApi _inputApi;
+        private readonly IInputService _inputService;
 
-        public ViewingState(CameraControllerComponent cameraControllerComponent, IInputApi inputApi)
+        public ViewingState(CameraControllerComponent cameraControllerComponent, IInputService inputService)
         {
             _cameraControllerComponent = cameraControllerComponent;
-            _inputApi = inputApi;
+            _inputService = inputService;
         }
 
         public void Begin()
@@ -23,9 +23,9 @@ namespace Game.Actions.StateMachine.Impl
 
         public void Update()
         {
-            if(_inputApi.isTapping.Value)
+            if(_inputService.IsTouching.Value)
             {
-                _cameraControllerComponent.Move(-_inputApi.TouchDelta * Time.deltaTime);
+                _cameraControllerComponent.Move(-_inputService.TouchDelta * Time.deltaTime);
             }
         }
 

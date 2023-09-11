@@ -7,10 +7,11 @@ namespace Game.Actions.Handlers.Impl
 {
     public class PickupHandler : IActionHandler
     {
+        private const string InteractableTag = "Interactable";
         private const float HoldTime = 0.5f;
 
-        private readonly IGridApi _gridApi;
-        private readonly IInputApi _inputApi;
+        private readonly IGridService _gridService;
+        private readonly IInputService _inputService;
         private readonly IActionsContext _actionsContext;
         private readonly DraggingState.Factory _draggingStateFactory;
         
@@ -19,39 +20,39 @@ namespace Game.Actions.Handlers.Impl
         public int Priority => 1;
         
         public PickupHandler(
-            IGridApi gridApi,
-            IInputApi inputApi,
+            IGridService gridService,
+            IInputService inputService,
             IActionsContext actionsContext, 
             DraggingState.Factory draggingStateFactory)
         {
-            _gridApi = gridApi;
-            _inputApi = inputApi;
+            _gridService = gridService;
+            _inputService = inputService;
             _actionsContext = actionsContext;
             _draggingStateFactory = draggingStateFactory;
         }
 
         public bool Handle(RaycastHit hit)
         {
-            if (!_inputApi.isTapping.Value)
+            if (!_inputService.IsTouching.Value)
             {
                 _currentHoldTime = 0;
             }
             
-            if (_actionsContext.CurrentState.GetType() == typeof(DraggingState))
+            if (_actionsContext.CurrentState is DraggingState)
             {
                 return true;
             }
             
-            if (!hit.transform || !hit.transform.CompareTag("Interactable"))
+            if (!hit.transform || !hit.transform.CompareTag(InteractableTag))
             {
                 return false;
             }
 
             _currentHoldTime += Time.deltaTime;
             
-            if(_currentHoldTime >= HoldTime && _gridApi.TryGetBuildingAtPosition(hit.point, out var building))
+            if(_currentHoldTime >= HoldTime && _gridService.TryGetBuildingAtPosition(hit.point, out var building))
             {
-                var gridPos = _gridApi.GridPositionFromWorld(hit.point);
+                var gridPos = _gridService.GridPositionFromWorld(hit.point);
                 
                 _actionsContext.ChangeState(_draggingStateFactory.Create(gridPos, building));
                 return true;

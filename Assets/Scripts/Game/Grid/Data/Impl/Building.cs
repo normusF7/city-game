@@ -1,6 +1,5 @@
-﻿using System;
-using Game.Buildings;
-using Game.Buildings.Data;
+﻿using Game.Buildings.Data.Impl;
+using Game.Buildings.Impl;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

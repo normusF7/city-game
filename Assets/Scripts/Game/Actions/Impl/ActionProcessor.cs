@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Assets.Scripts.Game.Actions.Impl;
 using Game.Actions.Handlers;
 using Game.Physics;
 using Zenject;
@@ -8,12 +7,12 @@ namespace Game.Actions.Impl
 {
     internal class ActionProcessor : IActionProcessor, ITickable
     {
-        private readonly IRaycastApi _raycastApi;
+        private readonly IRaycastService _raycastService;
         private readonly IReadOnlyCollection<IActionHandler> _actionHandlers;
 
-        public ActionProcessor(IRaycastApi raycastApi, List<IActionHandler> actionHandlers)
+        public ActionProcessor(IRaycastService raycastService, List<IActionHandler> actionHandlers)
         {
-            _raycastApi = raycastApi;
+            _raycastService = raycastService;
             actionHandlers.Sort((x, y) => y.Priority.CompareTo(x.Priority));
             _actionHandlers = actionHandlers;
         }
@@ -27,7 +26,7 @@ namespace Game.Actions.Impl
         {
             foreach (var handle in _actionHandlers)
             {
-                if (handle.Handle(_raycastApi.currentHit))
+                if (handle.Handle(_raycastService.CurrentHit))
                 {
                     break;
                 }

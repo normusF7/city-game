@@ -9,7 +9,8 @@ namespace Game.Grid.Impl
     {
         private const int Resolution = 20;
         
-        private IMutableCell[,] _cells = new IMutableCell[Resolution, Resolution];
+        private readonly IMutableCell[,] _cells = new IMutableCell[Resolution, Resolution];
+        
         private IBuilding _clipboard;
 
         public GridRepository()
@@ -118,6 +119,7 @@ namespace Game.Grid.Impl
         {
             _cells[position.x, position.y].Building = building;
             building.SetPosition(new Vector3(position.x + 0.5f, 0f, position.y + 0.5f));
+            building.SetCollisions(true);
         }
 
         private IBuilding GetBuilding(Vector2Int position)
